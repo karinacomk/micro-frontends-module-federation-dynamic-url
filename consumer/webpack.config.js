@@ -2,6 +2,9 @@ const path = require("path");
 const Dotenv = require("dotenv-webpack");
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const ModuleFederationPlugin = require("webpack/lib/container/ModuleFederationPlugin");
+const ExternalRemotesPlugin = require("external-remotes-plugin");
+
+const { remotes } = require("./remotes");
 
 const deps = require("./package.json").dependencies;
 module.exports = {
@@ -41,10 +44,7 @@ module.exports = {
     new ModuleFederationPlugin({
       name: "consumer",
       filename: "remoteEntry.js",
-      remotes: {
-        header: "header@http://localhost:3003/remoteEntry.js",
-        content: "content@http://localhost:3006/remoteEntry.js",
-      },
+      remotes,
       exposes: {},
       shared: {
         ...deps,
@@ -58,6 +58,7 @@ module.exports = {
         },
       },
     }),
+    new ExternalRemotesPlugin(),
     new HtmlWebPackPlugin({
       template: "./src/index.html",
     }),
